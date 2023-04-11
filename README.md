@@ -1,8 +1,10 @@
-# 无道词典
+# 无道词典-chatGPT version
 
 ![py](https://img.shields.io/badge/python-3.4.5-green.svg?style=plastic)![plat](https://img.shields.io/badge/platform-Ubuntu/CentOS/Debian-green.svg?style=plastic)
 
 ---
+
+新增chatGPT解释词语功能
 
 无道词典，是一个简洁优雅的有道词典命令行版本。支持英汉互查的功能，包含释义、词组、例句等有助于学习的内容。
 
@@ -20,6 +22,7 @@
 
 1. 基础词典，同时支持离线和在线查询(20w英汉查询 + 10w汉英查询 + 网络词库)
 2. 词组查询功能(例如直接输入`wd in order to`)
+3. chatGPT解释词语功能
 3. 自动补全功能(按Tab自动补全单词，包含1w个最热的词)
 4. 生词本(自动把历史记录存为生词本，`wd -h`查看生词本文件位置)
 5. 交互模式(`wd -i`进入，可以连续查词)
@@ -27,11 +30,10 @@
 
 ## 安装说明
 
-遇到任何问题，或者有任何改善建议请联系作者。 
+原作者: chestnutheng@hotmail.com
+原作者issue: <a href="https://github.com/ChestnutHeng/Wudao-dict/issues/new">创建新的 issue</a>
 
-邮箱: chestnutheng@hotmail.com
-
-issue: <a href="https://github.com/ChestnutHeng/Wudao-dict/issues/new">创建新的 issue</a>
+本repo issue: <a href="https://github.com/Hustwireless/Wudao-dict/issues/new">创建新的 issue</a>
 
 ### Linux 环境
 
@@ -40,29 +42,25 @@ issue: <a href="https://github.com/ChestnutHeng/Wudao-dict/issues/new">创建新
     ```
     sudo apt-get install python3
     sudo apt-get install python3-pip
-    sudo pip3 install bs4
-    sudo pip3 install lxml
+    sudo pip3 install bs4 lxml openai
     ```
  
     #### OpenSUSE
     ```
     sudo zypper install python3-pip
-    sudo pip3 install bs4
-    sudo pip3 install lxml
+    sudo pip3 install bs4 lxml openai
     ```
     #### CentOS
     ```
     sudo yum install python34
     sudo yum install python34-pip
-    sudo pip3 install bs4
-    sudo pip3 install lxml
+    sudo pip3 install bs4 lxml openai
     ```
     #### MacOS
     ```
     brew install python3
     sudo easy_install pip
-    sudo pip install bs4
-    sudo pip install lxml
+    sudo pip install bs4 lxml openai
     brew install bash-completion
     ```
 
@@ -92,6 +90,7 @@ Youdao is wudao, a powerful dict.
 -k, --kill             kill the server process       (退出服务进程)
 -h, --help             display this help and exit    (查看帮助)
 -s, --short            do or dont show sentences     (简明/完整模式)
+-c, --chatgpt          words explained by chatgpt    (chatGPT模式)
 -i, --inter            interaction mode              (交互模式)
 -n, --note             save/not save to notebook     (保存/不保存到生词本)
 -v, --version          version info                  (版本信息)
@@ -111,18 +110,17 @@ Youdao is wudao, a powerful dict.
 
 ## Release Notes
 
-#### Ver 1.0 (Oct 10, 2016)
+#### Ver 3.0 (Apr 11, 2023, latest)
+* Add chatgpt mode
 
-* 提供了基础的英汉互查的功能
-* 提供了在线查询的功能，并且查过后会缓存
-
-#### Ver 1.1 (Dec 1, 2016)
-
-* 提供了可以单独运行的单文件版本`wd_monofile`
-
-#### Ver 1.2 (Nov 22, 2017)
-
-* 在线查询修复了不显示被查词的bug
+#### Ver 2.1 (Nov 27, 2019)
+* 添加了交互模式，输入`wd -i`进入可以连续查词。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/49"> issue #49: 交互模式 wd -i</a>
+* `wd -s`可以保存啦！每次使用这个命令都会切换整句/简略模式。 <a href="https://github.com/ChestnutHeng/Wudao-dict/issues/18"> issue #18: 建议默认只看释义</a>
+* 生词本添加了音标。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/22"> issue #22: 能在生词本加入音标吗 </a>
+* 添加了版本号。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/25">issue #25: 建议加个-v，否则不知道自己当前用的是哪个版本 </a>
+* 指定生词本的想法也被集合在了交互模式中。用`wd -i`进入查看！
+* 支持检测生词本重复词条，最近查过的100条不会被记录。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/40">issue #40: 应该支持检测生词本重复词条的特性 #40 </a>
+* 词条上报升级为HTTPS链接，更好的保密性和安全性。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/46">issue #46: 安全问题！ </a>
 
 #### Ver 2.0 (Dec 3, 2018)
 
@@ -133,11 +131,23 @@ Youdao is wudao, a powerful dict.
 * 添加了生词本功能，自动把查过的词和释义添加到生词本文件中
 * 优化了排版，同一单词不再截断换行了 #该功能因为转移字符的问题搁置 <a href="https://github.com/ChestnutHeng/Wudao-dict/issues/16">issue #16:避免在单词内换行</a>
 
-#### Ver 2.1 (Nov 27, 2019, lastest)
-* 添加了交互模式，输入`wd -i`进入可以连续查词。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/49"> issue #49: 交互模式 wd -i</a>
-* `wd -s`可以保存啦！每次使用这个命令都会切换整句/简略模式。 <a href="https://github.com/ChestnutHeng/Wudao-dict/issues/18"> issue #18: 建议默认只看释义</a>
-* 生词本添加了音标。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/22"> issue #22: 能在生词本加入音标吗 </a>
-* 添加了版本号。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/25">issue #25: 建议加个-v，否则不知道自己当前用的是哪个版本 </a>
-* 指定生词本的想法也被集合在了交互模式中。用`wd -i`进入查看！
-* 支持检测生词本重复词条，最近查过的100条不会被记录。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/40">issue #40: 应该支持检测生词本重复词条的特性 #40 </a>
-* 词条上报升级为HTTPS链接，更好的保密性和安全性。<a href="https://github.com/ChestnutHeng/Wudao-dict/issues/46">issue #46: 安全问题！ </a>
+#### Ver 1.2 (Nov 22, 2017)
+
+* 在线查询修复了不显示被查词的bug
+
+#### Ver 1.1 (Dec 1, 2016)
+
+* 提供了可以单独运行的单文件版本`wd_monofile`
+
+#### Ver 1.0 (Oct 10, 2016)
+
+* 提供了基础的英汉互查的功能
+* 提供了在线查询的功能，并且查过后会缓存
+
+
+
+
+
+
+
+
