@@ -12,6 +12,8 @@ from src.WudaoClient import WudaoClient
 from src.tools import is_alphabet
 from src.tools import ie
 
+import openai
+
 
 class WudaoCommand:
     def __init__(self):
@@ -25,6 +27,13 @@ class WudaoCommand:
         self.conf = self.history_manager.conf
         # client
         self.client = WudaoClient()
+        # chatgpt
+        if self.conf['OPENAI_API_KEYS']:
+            self.openai_api_key = self.conf['OPENAI_API_KEYS']
+            self.chatgpt_haskey = True
+        else:
+            self.chatgpt_haskey = False
+        # print("has key" if self.chatgpt_haskey else "no key")
 
     # init parameters
     def param_separate(self):
@@ -87,6 +96,9 @@ class WudaoCommand:
             else:
                 print('保存到生词本关闭。再次键入 wd -n 开启')
         if '-c' in self.param_list or '--chatgpt' in self.param_list:
+            if not self.chatgpt_haskey:
+                print('Unable to talk to chatGPT Q^Q... \nPlease provide OPENAI_API_KEYS in the config file located at ./wudao-dict/usr/conf.json')
+                sys.exit(0)
             self.conf['chatgpt'] = not self.conf['chatgpt']
             if self.conf['chatgpt']:
                 print('chatGPT模式开启。')
@@ -102,9 +114,11 @@ class WudaoCommand:
     def query(self, word, notename='notebook'):
         word_info = {}
         is_zh = False
+        translate_to = "Chinese"
         if word:
             if not is_alphabet(word[0]):
                 is_zh = True
+                translate_to = "English"
         # 1. query on server
         word_info = None
         server_context = self.client.get_word_info(word).strip()
@@ -127,13 +141,17 @@ class WudaoCommand:
                     word_info = get_text(word)
                 if not word_info['paraphrase']:
                     print('No such word: %s found online' % (self.painter.RED_PATTERN % word))
-                    return
+                    if not self.conf['chatgpt']:
+                        print('You can enable chatGPT mode to get some explaination.')
+                        return
+                    else:
+                        print('Using chatGPT to get some explaination.')
                 # store struct
                 self.history_manager.add_word_info(word_info)
             except ImportError:
                 print('Word not found, auto Online search...')
-                print('You need install bs4, lxml first.')
-                print('Use ' + self.painter.RED_PATTERN % 'sudo pip3 install bs4 lxml' + ' or get bs4 online.')
+                print('You need install bs4, lxml, openai first.')
+                print('Use ' + self.painter.RED_PATTERN % 'sudo pip3 install bs4 lxml openai' + ' to install them.')
                 return
             except URLError:
                 print('Word not found, auto Online search...')
@@ -142,6 +160,20 @@ class WudaoCommand:
             except socket.error as socketerror:
                 print("Error: ", socketerror)
                 return
+        # 3.5 chatgpt word explaination
+        if self.conf['chatgpt']:
+            openai.api_key = self.openai_api_key
+            print("To " + translate_to)
+            messages = [
+                {"role": "system", "content": "You are a encyclopedia scholar who is proficient in all the languages."},
+                {"role": "user", "content": "Could you explain the meaning of \"" + word + "\" in" + translate_to + "?"
+                    + "Make sure to be short, precise, and easy to understand. Give two common examples. Answer should be bilingual and follow the format: Meaning: \nExample 1:\nExample 2:"}
+            ]
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages = messages
+            )
+            chat_info = response.choices[0].message.content
         # 4. save note
         if self.conf['save'] and not is_zh:
             self.history_manager.save_note(word_info, notename)
@@ -154,6 +186,10 @@ class WudaoCommand:
                 self.history_manager.add_item(word_info)
         else:
             print('Word not exists.')
+        if chat_info:
+            self.painter.draw_chat_text(chat_info, self.conf)
+        print("total_token_used:", response.usage.total_tokens)
+        print("response_time:", response.response_ms / 1000.0, 's')
     
     # interaction mode
     def interaction(self):

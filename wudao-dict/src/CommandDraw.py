@@ -133,3 +133,19 @@ class CommandDraw:
                         print('')
                         print(str(count) + '. ' + self.BROWN_PATTERN % v[0] + '    '+ v[1])
                     count += 1
+
+    def draw_chat_text(self, word, conf):
+        # split the text
+        subsubstrings = []
+        word = word.replace('\n', '')
+        substrings = word.split("Example ")
+        for substring in substrings:
+            subsubstrings.append(substring.split(":"))
+        # print(subsubstrings)
+        print(self.GREEN_PATTERN % (subsubstrings[0][0] + ':'), 
+              subsubstrings[0][1])
+        print(self.GREEN_PATTERN % ('Example ' + subsubstrings[1][0] + ':'), 
+              self.BROWN_PATTERN % subsubstrings[1][1])
+        print(self.GREEN_PATTERN % ('Example ' + subsubstrings[2][0] + ':'), 
+              self.BROWN_PATTERN % subsubstrings[2][1])
+        

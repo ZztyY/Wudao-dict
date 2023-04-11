@@ -30,7 +30,7 @@ class UserHistory:
                 json.dump({}, f)
         if not os.path.exists(self.CONF_NAME):
             with open(self.CONF_NAME, 'w+') as f:
-                json.dump({"short": False, "save": True, "chatgpt": False}, f)
+                json.dump({"short": False, "save": True, "chatgpt": False, "OPENAI_API_KEYS": False}, f)
 
         # Load file
         with open(self.LATEST_FILE_NAME, 'r') as f:
@@ -44,7 +44,7 @@ class UserHistory:
 
     # save conf
     def save_conf(self, conf):
-        if 'short' in conf and 'save' in conf and 'chatgpt' in conf:
+        if 'short' in conf and 'save' in conf and 'chatgpt' in conf and 'OPENAI_API_KEYS' in conf:
             with open(self.CONF_NAME, 'w+') as f:
                     json.dump(conf, f)
 
