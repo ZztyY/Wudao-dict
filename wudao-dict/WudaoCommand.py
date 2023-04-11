@@ -29,7 +29,7 @@ class WudaoCommand:
     # init parameters
     def param_separate(self):
         if len(sys.argv) == 1:
-            self.param_list.append('h')
+            self.param_list.append('-h')
         else:
             for v in sys.argv[1:]:
                 if v.startswith('-'):
@@ -48,7 +48,8 @@ class WudaoCommand:
             print('Youdao is wudao, a powerful dict.')
             print('-k, --kill             kill the server process       (退出服务进程)')
             print('-h, --help             display this help and exit    (查看帮助)')
-            print('-s, --short            do or don\'t show sentences    (简明/完整模式)')
+            print('-s, --short            do or don\'t show sentences   (简明/完整模式)')
+            print('-c, --chatgpt          words explained by chatgpt    (chatGPT模式)')
             print('-i, --inter            interaction mode              (交互模式)')
             print('-n, --note             save/not save to notebook     (保存/不保存到生词本)')
             print('-v, --version          version info                  (版本信息)')
@@ -85,6 +86,12 @@ class WudaoCommand:
                 print('保存到生词本开启。路径：%s' % (self.history_manager.NOTE_NAME))
             else:
                 print('保存到生词本关闭。再次键入 wd -n 开启')
+        if '-c' in self.param_list or '--chatgpt' in self.param_list:
+            self.conf['chatgpt'] = not self.conf['chatgpt']
+            if self.conf['chatgpt']:
+                print('chatGPT模式开启。')
+            else:
+                print('chatGPT模式关闭。再次键入 wd -c 开启')
         self.history_manager.save_conf(self.conf)
         # word check
         if not self.word:

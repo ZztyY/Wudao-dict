@@ -30,7 +30,7 @@ class UserHistory:
                 json.dump({}, f)
         if not os.path.exists(self.CONF_NAME):
             with open(self.CONF_NAME, 'w+') as f:
-                json.dump({"short": False, "save": True}, f)
+                json.dump({"short": False, "save": True, "chatgpt": False}, f)
 
         # Load file
         with open(self.LATEST_FILE_NAME, 'r') as f:
@@ -41,10 +41,10 @@ class UserHistory:
             self.word_co_map = json.load(f)
         with open(self.CONF_NAME, 'r') as f:
             self.conf = json.load(f)
-    # save conf
 
+    # save conf
     def save_conf(self, conf):
-        if 'short' in conf and 'save' in conf:
+        if 'short' in conf and 'save' in conf and 'chatgpt' in conf:
             with open(self.CONF_NAME, 'w+') as f:
                     json.dump(conf, f)
 
@@ -88,8 +88,8 @@ class UserHistory:
             return self.cache_dic[word.lower()]
         else:
             return None
+        
     # save word to notebook
-
     def save_note(self, word_struct, notename='notebook'):
         if word_struct['word'] in self.latest_word:
             return
