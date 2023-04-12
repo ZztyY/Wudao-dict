@@ -167,7 +167,7 @@ class WudaoCommand:
             messages = [
                 {"role": "system", "content": "You are a encyclopedia scholar who is proficient in all the languages."},
                 {"role": "user", "content": "Could you explain the meaning of \"" + word + "\" in" + translate_to + "?"
-                    + "Make sure to be short, precise, and easy to understand. Give two common examples. Answer should be bilingual and follow the format: Meaning: \nExample 1:\nExample 2:"}
+                    + "Make sure to be short, precise, and easy to understand. Give two common examples, which must be *bilingual*. Reply must use the format: Meaning: \nExample 1:\nExample 2:"}
             ]
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
@@ -188,7 +188,8 @@ class WudaoCommand:
             print('Word not exists.')
         if chat_info:
             self.painter.draw_chat_text(chat_info, self.conf)
-        print("total_token_used:", response.usage.total_tokens)
+        print("\ntotal_token_used:", response.usage.total_tokens)
+        print("response_price: $", "{:.5f}".format(int(response.usage.total_tokens)/1000.0 * 0.0002))
         print("response_time:", response.response_ms / 1000.0, 's')
     
     # interaction mode
