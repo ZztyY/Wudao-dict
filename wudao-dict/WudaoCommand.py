@@ -197,7 +197,7 @@ class WudaoCommand:
 
     # interaction mode
     def interaction(self):
-        self.conf = {'save': True, 'short': True, 'notename': 'notebook'}
+        self.conf = {'save': True, 'short': True, 'notename': 'notebook', 'chatgpt': False}
         while True:
             try:
                 inp = input('~ ')
