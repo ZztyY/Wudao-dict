@@ -5,7 +5,6 @@ import sys
 import os
 import socket
 
-
 from src.CommandDraw import CommandDraw
 from src.UserHistory import UserHistory
 from src.WudaoClient import WudaoClient
@@ -64,7 +63,7 @@ class WudaoCommand:
             print('-v, --version          version info                  (版本信息)')
             print('生词本文件: ' + os.path.abspath('./usr/') + '/notebook.txt')
             print('查询次数: ' + os.path.abspath('./usr/') + '/usr_word.json')
-            #print('-o, --online-search          search word online')
+            # print('-o, --online-search          search word online')
             exit(0)
         # interaction mode
         if '-i' in self.param_list or '--inter' in self.param_list:
@@ -97,7 +96,8 @@ class WudaoCommand:
                 print('保存到生词本关闭。再次键入 wd -n 开启')
         if '-c' in self.param_list or '--chatgpt' in self.param_list:
             if not self.chatgpt_haskey:
-                print('Unable to talk to chatGPT Q^Q... \nPlease provide OPENAI_API_KEYS in the config file located at ./wudao-dict/usr/conf.json')
+                print(
+                    'Unable to talk to chatGPT Q^Q... \nPlease provide OPENAI_API_KEYS in the config file located at ./wudao-dict/usr/conf.json')
                 sys.exit(0)
             self.conf['chatgpt'] = not self.conf['chatgpt']
             if self.conf['chatgpt']:
@@ -161,17 +161,19 @@ class WudaoCommand:
                 print("Error: ", socketerror)
                 return
         # 3.5 chatgpt word explaination
+        chat_info = 0
+        response = 0
         if self.conf['chatgpt']:
             openai.api_key = self.openai_api_key
             print("To " + translate_to)
             messages = [
                 {"role": "system", "content": "You are a encyclopedia scholar who is proficient in all the languages."},
                 {"role": "user", "content": "Could you explain the meaning of \"" + word + "\" in" + translate_to + "?"
-                    + "Make sure to be short, precise, and easy to understand. Give two common examples, which must be *bilingual*. Reply must use the format: Meaning: \nExample 1:\nExample 2:"}
+                                            + "Make sure to be short, precise, and easy to understand. Give two common examples, which must be *bilingual*. Reply must use the format: Meaning: \nExample 1:\nExample 2:"}
             ]
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages = messages
+                messages=messages
             )
             chat_info = response.choices[0].message.content
         # 4. save note
@@ -188,13 +190,14 @@ class WudaoCommand:
             print('Word not exists.')
         if chat_info:
             self.painter.draw_chat_text(chat_info, self.conf)
-        print("\ntotal_token_used:", response.usage.total_tokens)
-        print("response_price: $", "{:.5f}".format(int(response.usage.total_tokens)/1000.0 * 0.0002))
-        print("response_time:", response.response_ms / 1000.0, 's')
-    
+        if response:
+            print("\ntotal_token_used:", response.usage.total_tokens)
+            print("response_price: $", f"{int(response.usage.total_tokens) / 1000.0 * 0.0002:.5f}")
+            print("response_time:", response.response_ms / 1000.0, 's')
+
     # interaction mode
     def interaction(self):
-        self.conf = {'save': True, 'short': True, 'notename': 'notebook'}
+        self.conf = {'save': True, 'short': True, 'notename': 'notebook', 'chatgpt': False}
         while True:
             try:
                 inp = input('~ ')
